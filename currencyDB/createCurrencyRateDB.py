@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 
-def create_db(file):
+def create_db(file='./currencyRate.db'):
     """
     create db file if it doesn't exist and connect to the db
     """
@@ -20,8 +20,8 @@ def create_tables(db_file='./currencyRate.db'):
     """
     create tables that will be containing currency rate by each currency code
     """
-    from exchange import Exchange
-    from dbTools import create_connection
+    from currencyDB.exchange import Exchange
+    from currencyDB.dbTools import create_connection
 
     sql_create_table = '''create table if not exists {table_name} (
                             code text not null primary key,
