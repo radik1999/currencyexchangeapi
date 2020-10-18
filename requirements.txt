@@ -1,3 +1,5 @@
-ccy~=1.2.0
-geocoder~=1.38.1
-requests~=2.24.0
+ccy==1.2.0
+geocoder==1.38.1
+requests==2.24.0
+
+pytest==6.1.1
