@@ -1,2 +1,2 @@
 from currencyDB.dbTools import *
-from currencyDB.exchange import Exchange
+from currencyDB.exchange import *
