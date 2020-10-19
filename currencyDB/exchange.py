@@ -1,20 +1,25 @@
+import sqlite3
 import ccy
 import geocoder
 import requests
 from pprint import pprint
+
 
 class Exchange:
     """Клас для отримання курсу валют"""
 
     def __init__(self, url='https://api.exchangerate.host/latest'):
         self.url = url
-        self.all_rates = self.get_all_rates()
+        self.all_rates = self.take_rates()
+        self.all_rates_codes = list(self.all_rates)
 
-    def get_all_rates(self, base='USD') -> list:
+    def take_rates(self):
+        req = requests.get(self.url)
+        return dict(req.json()['rates'])
+
+    def get_all_rates(self, base='USD') -> dict:
         """Повертає курс по всіх можливих валютах в даній апі"""
-        self.parameters = {'base': base}
-        req = requests.get(self.url, params=self.parameters)
-        return req.json()['rates']
+        return {code: self.get_exact_currency_rate(base, code) for code in self.all_rates_codes}
 
     def get_exact_currency_rate(self, cur_from, cur_to):
         """
@@ -25,12 +30,12 @@ class Exchange:
         """
         cur_from = cur_from.upper()
         cur_to = cur_to.upper()
-        if cur_to not in self.all_rates:
-            return f'There isn\'t {cur_to} currency'
-        if cur_from not in self.all_rates:
-            return f'There isn\'t {cur_from} currency'
-
-        return self.all_rates[cur_to] / self.all_rates[cur_from]
+        res = None
+        try:
+            res = self.all_rates[cur_to] / self.all_rates[cur_from]
+        except Exception as e:
+            print(e)
+        return res
 
     def get_currency_rate(self, cur_from, cur_to):
         """
@@ -56,7 +61,24 @@ class Exchange:
         return self.get_all_rate_by_country_code(currency_code_of_current_country)
 
 
-if __name__ == '__main__':
-    cur = Exchange()
-    pprint(cur.get_all_rates('UAH'))
+class DatabaseExchange(Exchange):
+    def __init__(self, db_file=r'/mnt/sdb1/python/exchangerateapi/currencyDB/currencyRate.db', table_name='currency_rate'):
+        self.db_file = db_file
+        self.table_name = table_name
+        super().__init__()
 
+    def take_rates(self):
+        records = None
+        try:
+            connection = sqlite3.connect(self.db_file)
+            curs = connection.cursor()
+            curs.execute(f'''select * from {self.table_name}''')
+            records = curs.fetchall()
+        except Exception as e:
+            print(e)
+        return dict(records)
+
+
+if __name__ == '__main__':
+    cur = DatabaseExchange()
+    print(cur.all_rates)
