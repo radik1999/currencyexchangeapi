@@ -5,6 +5,13 @@ import requests
 from pprint import pprint
 
 
+class BaseCurrencyError(Exception):
+    pass
+
+class AmountError(Exception):
+    pass
+
+
 class Exchange:
     """Клас для отримання курсу валют"""
 
@@ -19,7 +26,17 @@ class Exchange:
 
     def get_all_rates(self, base='USD') -> dict:
         """Повертає курс по всіх можливих валютах в даній апі"""
-        return {code: self.get_exact_currency_rate(base, code) for code in self.all_rates_codes}
+        return {code: self.get_currency_rate(base, code) for code in self.all_rates_codes}
+
+    def get_specific_rate(self, base, currency_codes, amount) -> object:
+        if base.upper() not in self.all_rates_codes:
+            raise BaseCurrencyError('There is no such currency')
+        if amount < 1:
+            raise AmountError('Amount must be 1 or more')
+        res = {currency: rate * amount
+               for currency, rate in self.get_all_rates(base).items()
+               if currency in currency_codes}
+        return res
 
     def get_exact_currency_rate(self, cur_from, cur_to):
         """
@@ -30,7 +47,7 @@ class Exchange:
         """
         cur_from = cur_from.upper()
         cur_to = cur_to.upper()
-        res = None
+        res = 0
         try:
             res = self.all_rates[cur_to] / self.all_rates[cur_from]
         except Exception as e:
@@ -62,7 +79,8 @@ class Exchange:
 
 
 class DatabaseExchange(Exchange):
-    def __init__(self, db_file=r'/mnt/sdb1/python/exchangerateapi/currencyDB/currencyRate.db', table_name='currency_rate'):
+    def __init__(self, db_file=r'/mnt/sdb1/python/exchangerateapi/currencyDB/currencyRate.db',
+                 table_name='currency_rate'):
         self.db_file = db_file
         self.table_name = table_name
         super().__init__()
@@ -81,4 +99,4 @@ class DatabaseExchange(Exchange):
 
 if __name__ == '__main__':
     cur = DatabaseExchange()
-    print(cur.all_rates)
+    cur.get_specific_rate('NAN', None, 1)
