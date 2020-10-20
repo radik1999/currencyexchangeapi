@@ -19,7 +19,12 @@ class Exchange:
 
     def get_all_rates(self, base='USD') -> dict:
         """Повертає курс по всіх можливих валютах в даній апі"""
-        return {code: self.get_exact_currency_rate(base, code) for code in self.all_rates_codes}
+        return {code: self.get_currency_rate(base, code) for code in self.all_rates_codes}
+
+    def get_specific_rate(self, base, currency_codes, amount):
+        return {currency: rate * amount
+                for currency, rate in self.get_all_rates(base).items()
+                if currency in currency_codes}
 
     def get_exact_currency_rate(self, cur_from, cur_to):
         """
@@ -81,4 +86,3 @@ class DatabaseExchange(Exchange):
 
 if __name__ == '__main__':
     cur = DatabaseExchange()
-    print(cur.all_rates)
