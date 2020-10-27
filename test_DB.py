@@ -1,7 +1,6 @@
 import os
-import pytest
-from currencyDB import *
-DB_FILE = r'/mnt/sdb1/python/exchangerateapi/currencyDB/currencyRate.db'
+from dbTools import *
+DB_FILE = r'./currencyRate.db'
 
 
 def test_create_db():
@@ -33,6 +32,7 @@ def test_insert_record():
     inserted = False
     with Database(DB_FILE) as con:
         cur = con.cursor()
+
         params = ('test', 322)
         insert_record(con, params, table_name)
         cur.execute(f'''select * from {table_name} where code='{params[0]}';''')
@@ -61,4 +61,7 @@ def test_update_record():
 
 
 if __name__ == '__main__':
+    test_create_db()
+    test_create_tables()
+    test_insert_record()
     test_update_record()

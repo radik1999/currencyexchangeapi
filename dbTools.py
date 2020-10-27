@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-from currencyDB.exchange import Exchange
+from exchange import Exchange
 
 
 class Database:
@@ -8,7 +8,7 @@ class Database:
     class that will help us to close connection when we'll be using command - "with"
     """
 
-    def __init__(self, db_file=r'/mnt/sdb1/python/exchangerateapi/currencyDB/currencyRate.db'):
+    def __init__(self, db_file=r'./currencyRate.db'):
         self.connection = sqlite3.connect(db_file)
 
     def __enter__(self):
@@ -99,4 +99,4 @@ def update_table(connection, table_name='currency_rate'):
 
 if __name__ == '__main__':
     with Database() as con:
-        update_table(con)
+        pass

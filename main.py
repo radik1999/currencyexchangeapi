@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from datetime import date
 
 from intervalUpdateDB import daily_update_db
-from currencyDB import DatabaseExchange
+from exchange import DatabaseExchange
 
 app = FastAPI()
 daily_update_db()

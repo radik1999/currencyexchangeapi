@@ -2,11 +2,11 @@ import sqlite3
 import ccy
 import geocoder
 import requests
-from pprint import pprint
 
 
 class BaseCurrencyError(Exception):
     pass
+
 
 class AmountError(Exception):
     pass
@@ -79,7 +79,7 @@ class Exchange:
 
 
 class DatabaseExchange(Exchange):
-    def __init__(self, db_file=r'/mnt/sdb1/python/exchangerateapi/currencyDB/currencyRate.db',
+    def __init__(self, db_file=r'./currencyRate.db',
                  table_name='currency_rate'):
         self.db_file = db_file
         self.table_name = table_name
@@ -92,6 +92,7 @@ class DatabaseExchange(Exchange):
             curs = connection.cursor()
             curs.execute(f'''select * from {self.table_name}''')
             records = curs.fetchall()
+
         except Exception as e:
             print(e)
         return dict(records)
@@ -99,4 +100,3 @@ class DatabaseExchange(Exchange):
 
 if __name__ == '__main__':
     cur = DatabaseExchange()
-    cur.get_specific_rate('NAN', None, 1)

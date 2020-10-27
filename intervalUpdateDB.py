@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-from currencyDB import update_table, Database
+from dbTools import update_table, Database
 
 
 def update_db():
