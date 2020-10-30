@@ -9,7 +9,7 @@ daily_update_db()
 
 
 @app.get('/')
-def retrieve_currency_rate_by_code(base: str = 'USD', codes: str = None, amount: int = 1):
+async def retrieve_currency_rate_by_code(base: str = 'USD', codes: str = None, amount: int = 1):
     db = DatabaseExchange()
     try:
         if not codes:
